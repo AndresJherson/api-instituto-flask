@@ -29,9 +29,12 @@ class Conector:
             self.cursor.execute(query)
             filas = self.cursor.fetchall()
 
+            columnas = [col[0] for col in self.cursor.description]
+
             data = []
             for fila in filas:
-                data.append([x for x in fila])
+                objeto = {columnas[i]: fila[i] for i in range(len(fila))}
+                data.append(objeto)
 
             return data
         except mysql.connector.Error as e:
