@@ -11,6 +11,12 @@ def index():
     return jsonify( data )
 
 
+@app.route( '/productos/<int:id>', methods = [ 'GET' ] )
+def index( id ):
+    data = conector.execute_query( "select * from productos where id = %s", ( id, ) )
+    return jsonify( data )
+
+
 @app.route( '/productos', methods = [ 'POST' ] )
 def crear_producto():
     nuevo_producto = request.json
