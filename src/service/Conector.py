@@ -24,9 +24,9 @@ class Conector:
         except mysql.connector.Error as e:
             print("Error de conexión: ", e)
         
-    def execute_query(self, query: str):
+    def execute_query(self, query: str, parametros = ()):
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query, parametros)
             filas = self.cursor.fetchall()
 
             columnas = [col[0] for col in self.cursor.description]
