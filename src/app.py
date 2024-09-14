@@ -12,7 +12,7 @@ def index():
 
 
 @app.route( '/productos/<int:id>', methods = [ 'GET' ] )
-def index( id ):
+def getById( id ):
     data = conector.execute_query( "select * from productos where id = %s", ( id, ) )
     return jsonify( data )
 
