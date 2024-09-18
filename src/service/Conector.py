@@ -1,4 +1,4 @@
-import mysql.connector
+import pyodbc
 
 class Conector:
     
@@ -7,21 +7,16 @@ class Conector:
     
     def __init__(self):
         try:
-            self.conexion = mysql.connector.connect(
-                host='mysql8002.site4now.net',
-                user='aaca99_ventas',
-                password='ventas123',
-                database='db_aaca99_ventas',
+            self.conexion = pyodbc.connect(
+                'DRIVER={ODBC Driver 17 for SQL Server};'
+                'SERVER=sql8020.site4now.net;'
+                'DATABASE=db_aaca99_ventas;'
+                'UID=db_aaca99_ventas_admin;'
+                'PWD=ventas123;'
             )
-            if self.conexion.is_connected():
-                self.cursor = self.conexion.cursor()
-            else:
-                print("Error: No se pudo establecer la conexión a la base de datos.")
+            self.cursor = self.conexion.cursor()
             
-            # print( 'conector: ' * self.conexion )
-            # print( 'cursor: ' * self.cursor )
-        
-        except mysql.connector.Error as e:
+        except pyodbc.Error as e:
             print("Error de conexión: ", e)
         
     def execute_query(self, query: str, parametros = ()):
@@ -37,7 +32,7 @@ class Conector:
                 data.append(objeto)
 
             return data
-        except mysql.connector.Error as e:
+        except pyodbc.Error as e:
             print("Error ejecutando la consulta: ", e)
             return None
     
@@ -48,26 +43,22 @@ class Conector:
             filas_afectadas = self.cursor.rowcount
             return filas_afectadas
         
-        except mysql.connector.Error as e:
+        except pyodbc.Error as e:
             print("Error ejecutando la consulta: ", e)
             return 0
     
     def get_id(self, tabla: str):
         try:
-            query = f"SELECT MAX(id) FROM {tabla}"
+            query = f"SELECT ISNULL( MAX(id), 0 ) + 1 FROM {tabla}"
             self.cursor.execute(query)
             fila = self.cursor.fetchone()
 
-            if fila and fila[0] is not None:
-                return fila[0] + 1
-            else:
-                return 1
+            return fila[0] if fila else 1
             
-        except mysql.connector.Error as e:
+        except pyodbc.Error as e:
             print("Error obteniendo el id: ", e)
             return None
         
     def __del__(self):
-        if self.conexion.is_connected():
-            self.cursor.close()
-            self.conexion.close()
+        self.cursor.close()
+        self.conexion.close()

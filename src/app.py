@@ -7,13 +7,13 @@ conector = Conector()
 
 @app.route( '/productos', methods = [ 'GET' ] )
 def index():
-    data = conector.execute_query( "select * from productos" )
+    data = conector.execute_query( "select * from producto" )
     return jsonify( data )
 
 
 @app.route( '/productos/<int:id>', methods = [ 'GET' ] )
 def getById( id ):
-    data = conector.execute_query( "select * from productos where id = %s", ( id, ) )
+    data = conector.execute_query( "select * from producto where id = ?", ( id, ) )
     return jsonify( data )
 
 
@@ -23,11 +23,11 @@ def crear_producto():
     nombre = nuevo_producto['nombre']
     descripcion = nuevo_producto['descripcion']
     precio = nuevo_producto['precio']
-    id = conector.get_id( 'productos' )
+    id = conector.get_id( 'producto' )
     print( nuevo_producto )
     print( id )
 
-    filas_afectadas = conector.execute_non_query( "INSERT INTO productos (id, nombre, descripcion, precio) VALUES (%s, %s, %s, %s)", (id, nombre, descripcion, precio) )
+    filas_afectadas = conector.execute_non_query( "INSERT INTO producto (id, nombre, descripcion, precio) VALUES (?, ?, ?, ?)", (id, nombre, descripcion, precio) )
 
     return jsonify( { "filas_afectadas": filas_afectadas } )
 
@@ -39,14 +39,14 @@ def actualizar_producto( id ):
     descripcion = producto_actualizado['descripcion']
     precio = producto_actualizado['precio']
     
-    filas_afectadas = conector.execute_non_query("UPDATE productos SET nombre = %s, descripcion = %s, precio = %s WHERE id = %s", (nombre, descripcion, precio, id))
+    filas_afectadas = conector.execute_non_query("UPDATE producto SET nombre = ?, descripcion = ?, precio = ? WHERE id = ?", (nombre, descripcion, precio, id))
     
     return jsonify( { "filas_afectadas": filas_afectadas } )
 
 
 @app.route( '/productos/<int:id>', methods = [ 'DELETE' ] )
 def eliminar_producto( id ):
-    filas_afectadas = conector.execute_non_query("DELETE FROM productos WHERE id = %s", ( id, ))
+    filas_afectadas = conector.execute_non_query("DELETE FROM producto WHERE id = ?", ( id, ))
     
     return jsonify( { "filas_afectadas": filas_afectadas } )
 
