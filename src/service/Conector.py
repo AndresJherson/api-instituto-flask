@@ -1,4 +1,4 @@
-import pyodbc
+import pymssql
 
 class Conector:
     
@@ -7,16 +7,15 @@ class Conector:
     
     def __init__(self):
         try:
-            self.conexion = pyodbc.connect(
-                'DRIVER={ODBC Driver 17 for SQL Server};'
-                'SERVER=sql8020.site4now.net;'
-                'DATABASE=db_aaca99_ventas;'
-                'UID=db_aaca99_ventas_admin;'
-                'PWD=ventas123;'
+            self.conexion = pymssql.connect(
+                server='sql8020.site4now.net',
+                database='db_aaca99_ventas',
+                user='db_aaca99_ventas_admin',
+                password='ventas123'
             )
             self.cursor = self.conexion.cursor()
             
-        except pyodbc.Error as e:
+        except pymssql.Error as e:
             print("Error de conexión: ", e)
         
     def execute_query(self, query: str, parametros = ()):
@@ -32,7 +31,7 @@ class Conector:
                 data.append(objeto)
 
             return data
-        except pyodbc.Error as e:
+        except pymssql.Error as e:
             print("Error ejecutando la consulta: ", e)
             return None
     
@@ -43,7 +42,7 @@ class Conector:
             filas_afectadas = self.cursor.rowcount
             return filas_afectadas
         
-        except pyodbc.Error as e:
+        except pymssql.Error as e:
             print("Error ejecutando la consulta: ", e)
             return 0
     
@@ -55,10 +54,12 @@ class Conector:
 
             return fila[0] if fila else 1
             
-        except pyodbc.Error as e:
+        except pymssql.Error as e:
             print("Error obteniendo el id: ", e)
             return None
         
     def __del__(self):
-        self.cursor.close()
-        self.conexion.close()
+        if self.cursor:
+            self.cursor.close()
+        if self.conexion:
+            self.conexion.close()

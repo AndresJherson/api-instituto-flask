@@ -13,7 +13,7 @@ def index():
 
 @app.route( '/productos/<int:id>', methods = [ 'GET' ] )
 def getById( id ):
-    data = conector.execute_query( "select * from producto where id = ?", ( id, ) )
+    data = conector.execute_query( "select * from producto where id = %s", ( id, ) )
     return jsonify( data )
 
 
@@ -27,7 +27,7 @@ def crear_producto():
     print( nuevo_producto )
     print( id )
 
-    filas_afectadas = conector.execute_non_query( "INSERT INTO producto (id, nombre, descripcion, precio) VALUES (?, ?, ?, ?)", (id, nombre, descripcion, precio) )
+    filas_afectadas = conector.execute_non_query( "INSERT INTO producto (id, nombre, descripcion, precio) VALUES (%s, %s, %s, %s)", (id, nombre, descripcion, precio) )
 
     return jsonify( { "filas_afectadas": filas_afectadas } )
 
@@ -39,14 +39,14 @@ def actualizar_producto( id ):
     descripcion = producto_actualizado['descripcion']
     precio = producto_actualizado['precio']
     
-    filas_afectadas = conector.execute_non_query("UPDATE producto SET nombre = ?, descripcion = ?, precio = ? WHERE id = ?", (nombre, descripcion, precio, id))
+    filas_afectadas = conector.execute_non_query("UPDATE producto SET nombre = %s, descripcion = %s, precio = %s WHERE id = %s", (nombre, descripcion, precio, id))
     
     return jsonify( { "filas_afectadas": filas_afectadas } )
 
 
 @app.route( '/productos/<int:id>', methods = [ 'DELETE' ] )
 def eliminar_producto( id ):
-    filas_afectadas = conector.execute_non_query("DELETE FROM producto WHERE id = ?", ( id, ))
+    filas_afectadas = conector.execute_non_query("DELETE FROM producto WHERE id = %s", ( id, ))
     
     return jsonify( { "filas_afectadas": filas_afectadas } )
 
